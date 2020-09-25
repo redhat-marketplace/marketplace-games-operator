@@ -1,0 +1,24 @@
+# permissions for end users to edit snakes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: snake-editor-role
+rules:
+- apiGroups:
+  - game.marketplace.redhat.com
+  resources:
+  - snakes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - game.marketplace.redhat.com
+  resources:
+  - snakes/status
+  verbs:
+  - get
