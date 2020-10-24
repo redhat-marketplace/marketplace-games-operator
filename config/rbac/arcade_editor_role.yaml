@@ -1,20 +1,24 @@
-# permissions for end users to view snakes.
+# permissions for end users to edit arcades.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: snake-viewer-role
+  name: arcade-editor-role
 rules:
 - apiGroups:
   - game.marketplace.redhat.com
   resources:
-  - snakes
+  - arcades
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
   - game.marketplace.redhat.com
   resources:
-  - snakes/status
+  - arcades/status
   verbs:
   - get

@@ -1,4 +1,4 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
-- game_v1alpha1_snake.yaml
+- game_v1alpha1_arcade.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

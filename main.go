@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Red Hat Marketplace contributors.
+
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	gamev1alpha1 "marketplace.redhat.com/marketplace-games-operator/api/v1alpha1"
-	"marketplace.redhat.com/marketplace-games-operator/controllers"
+	gamev1alpha1 "github.com/redhat-marketplace/marketplace-games-operator/api/v1alpha1"
+	"github.com/redhat-marketplace/marketplace-games-operator/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -60,18 +60,19 @@ func main() {
 		MetricsBindAddress: metricsAddr,
 		Port:               9443,
 		LeaderElection:     enableLeaderElection,
-		LeaderElectionID:   "c87dbaae.marketplace.redhat.com",
+		LeaderElectionID:   "516a1599.marketplace.redhat.com",
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-	if err = (&controllers.InstanceReconciler{
+
+	if err = (&controllers.ArcadeReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("Instance"),
+		Log:    ctrl.Log.WithName("controllers").WithName("Arcade"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Instance")
+		setupLog.Error(err, "unable to create controller", "controller", "Arcade")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
