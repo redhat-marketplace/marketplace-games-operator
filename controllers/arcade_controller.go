@@ -96,7 +96,7 @@ func (r *ArcadeReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
-	route := &corev1.Service{}
+	route := &routev1.Route{}
 	err = r.Get(ctx, types.NamespacedName{Name: arcade.Name, Namespace: arcade.Namespace}, route)
 	if err != nil && errors.IsNotFound(err) {
 		rt := r.routeForArcade(arcade)
@@ -119,6 +119,9 @@ func (r *ArcadeReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 func (r *ArcadeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&arcadev1alpha1.Arcade{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
+		Owns(&routev1.Route{}).
 		Complete(r)
 }
 
