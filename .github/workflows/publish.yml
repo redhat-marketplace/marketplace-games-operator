@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build image
-        run: docker build -t arcade-operator .
+        run: make docker-build IMG=arcade-operator
 
       - name: Tag image
         run: docker tag "arcade-operator" "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator:latest"
