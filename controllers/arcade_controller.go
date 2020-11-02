@@ -208,7 +208,7 @@ func (r *ArcadeReconciler) routeForArcade(m *arcadev1alpha1.Arcade) *routev1.Rou
 				Name: m.Name,
 			},
 			Port: &routev1.RoutePort{
-				TargetPort: intstr.FromInt(int(8080)),
+				TargetPort: intstr.FromInt(8080),
 			},
 			TLS: &routev1.TLSConfig{
 				Termination: routev1.TLSTerminationEdge,
