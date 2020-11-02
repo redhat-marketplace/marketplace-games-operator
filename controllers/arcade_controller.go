@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	"os"
+	"time"
 
 	"github.com/go-logr/logr"
 	routev1 "github.com/openshift/api/route/v1"
@@ -106,9 +108,9 @@ func (r *ArcadeReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			log.Error(err, "Failed to create new Route", "Route.Namespace", rt.Namespace, "Route.Name", rt.Name)
 			return ctrl.Result{}, err
 		}
-		return ctrl.Result{Requeue: true}, nil
+		return ctrl.Result{RequeueAfter: time.Second * 3}, nil
 	} else if err != nil {
-		log.Error(err, "Failed to get Service")
+		log.Error(err, "Failed to get Route")
 		return ctrl.Result{}, err
 	}
 
@@ -144,18 +146,21 @@ func (r *ArcadeReconciler) deploymentForArcade(m *arcadev1alpha1.Arcade) *appsv1
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image: "arcade:1.0.0",
+						Image: os.Getenv("REGISTRY_REPO") + "." + os.Getenv("REGISTRY_HOST") + "/rhm-arcade",
 						Name:  "arcade",
 						Ports: []corev1.ContainerPort{{
-							ContainerPort: 4004,
+							ContainerPort: 8080,
 							Name:          "arcade",
 						}},
+					}},
+					ImagePullSecrets: []corev1.LocalObjectReference{{
+						Name: "regcreds-arcade-art",
 					}},
 				},
 			},
 		},
 	}
-	// Set Arcade instance as the owner and controller
+	// Set Arcade instance as the owner and controller for deployments
 	ctrl.SetControllerReference(m, dep, r.Scheme)
 	return dep
 }
@@ -172,14 +177,16 @@ func (r *ArcadeReconciler) serviceForArcade(m *arcadev1alpha1.Arcade) *corev1.Se
 		Spec: corev1.ServiceSpec{
 			Type: "ClusterIP",
 			Ports: []corev1.ServicePort{{
-				Port:       4004,
-				Protocol:   "TCP",
-				TargetPort: intstr.FromInt(4004),
+				Port:       8080,
+				Protocol:   corev1.ProtocolTCP,
+				TargetPort: intstr.FromInt(8080),
 			}},
 			Selector: ls,
 		},
 	}
 
+	// Set Arcade instance as the owner and controller for created services
+	ctrl.SetControllerReference(m, service, r.Scheme)
 	return service
 }
 
@@ -187,6 +194,9 @@ func (r *ArcadeReconciler) serviceForArcade(m *arcadev1alpha1.Arcade) *corev1.Se
 func (r *ArcadeReconciler) routeForArcade(m *arcadev1alpha1.Arcade) *routev1.Route {
 	ls := labelsForArcade(m.Name)
 	route := &routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "Route",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
 			Namespace: m.Namespace,
@@ -198,7 +208,7 @@ func (r *ArcadeReconciler) routeForArcade(m *arcadev1alpha1.Arcade) *routev1.Rou
 				Name: m.Name,
 			},
 			Port: &routev1.RoutePort{
-				TargetPort: intstr.FromString(m.Name),
+				TargetPort: intstr.FromInt(int(8080)),
 			},
 			TLS: &routev1.TLSConfig{
 				Termination: routev1.TLSTerminationEdge,
@@ -206,7 +216,7 @@ func (r *ArcadeReconciler) routeForArcade(m *arcadev1alpha1.Arcade) *routev1.Rou
 		},
 	}
 
-	// Set MobileSecurityService mss as the owner and controller
+	// Set Arcade instance as the owner and controller for created routes
 	ctrl.SetControllerReference(m, route, r.Scheme)
 	return route
 }
