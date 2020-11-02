@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Red Hat Marketplace contributors.
+
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	gamev1alpha1 "marketplace.redhat.com/marketplace-games-operator/api/v1alpha1"
+	gamev1alpha1 "github.com/redhat-marketplace/marketplace-games-operator/api/v1alpha1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -61,9 +61,6 @@ var _ = BeforeSuite(func(done Done) {
 	cfg, err = testEnv.Start()
 	Expect(err).ToNot(HaveOccurred())
 	Expect(cfg).ToNot(BeNil())
-
-	err = gamev1alpha1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
 
 	err = gamev1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
