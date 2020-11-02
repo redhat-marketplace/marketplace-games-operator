@@ -16,6 +16,9 @@ jobs:
 
       - name: Build image
         run: make docker-build IMG=arcade-operator
+        env:
+          REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
+          REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
 
       - name: Tag image
         run: docker tag "arcade-operator" "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator:latest"
