@@ -36,6 +36,8 @@ import (
 	arcadev1alpha1 "github.com/redhat-marketplace/marketplace-games-operator/api/v1alpha1"
 )
 
+const PORT = 8080
+
 // ArcadeReconciler reconciles a Arcade object
 type ArcadeReconciler struct {
 	client.Client
@@ -149,7 +151,7 @@ func (r *ArcadeReconciler) deploymentForArcade(m *arcadev1alpha1.Arcade) *appsv1
 						Image: os.Getenv("REGISTRY_REPO") + "." + os.Getenv("REGISTRY_HOST") + "/rhm-arcade",
 						Name:  "arcade",
 						Ports: []corev1.ContainerPort{{
-							ContainerPort: 8080,
+							ContainerPort: PORT,
 							Name:          "arcade",
 						}},
 					}},
@@ -177,9 +179,9 @@ func (r *ArcadeReconciler) serviceForArcade(m *arcadev1alpha1.Arcade) *corev1.Se
 		Spec: corev1.ServiceSpec{
 			Type: "ClusterIP",
 			Ports: []corev1.ServicePort{{
-				Port:       8080,
+				Port:       PORT,
 				Protocol:   corev1.ProtocolTCP,
-				TargetPort: intstr.FromInt(8080),
+				TargetPort: intstr.FromInt(PORT),
 			}},
 			Selector: ls,
 		},
@@ -208,7 +210,7 @@ func (r *ArcadeReconciler) routeForArcade(m *arcadev1alpha1.Arcade) *routev1.Rou
 				Name: m.Name,
 			},
 			Port: &routev1.RoutePort{
-				TargetPort: intstr.FromInt(8080),
+				TargetPort: intstr.FromInt(PORT),
 			},
 			TLS: &routev1.TLSConfig{
 				Termination: routev1.TLSTerminationEdge,
