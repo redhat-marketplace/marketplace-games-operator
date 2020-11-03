@@ -14,18 +14,13 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Build image
-        run: make docker-build IMG=arcade-operator
-        env:
-          REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
-          REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
-
-      - name: Tag image
-        run: docker tag "arcade-operator" "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator:latest"
-
       - name: Login to registry
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
 
-      - name: Push image to registry
-        run: docker push "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator"
+      - name: Build, tag, & push image to registry
+        run: make docker-build && make docker-push
+        env:
+          IMG: "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator"
+          REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
+          REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
