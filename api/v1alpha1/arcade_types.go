@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Red Hat Marketplace contributors.
+
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,49 +17,40 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/operator-framework/operator-lib/status"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// InstanceSpec defines the desired state of Instance
-type InstanceSpec struct {
-	// Domain is the domain name of the game ex. mygames.foo.com
-	Domain string `json:"domain,omitempty"`
-
-	// TLSEnabled toggles TLS deployed with the instance
-	TLSEnabled bool `json:"tlsEnabled,omitempty"`
+// ArcadeSpec defines the desired state of Arcade
+type ArcadeSpec struct {
 }
 
-// InstanceStatus defines the observed state of Instance
-type InstanceStatus struct {
-	// Conditions report status of the operator
-	Conditions status.Conditions `json:"conditions,omitempty"`
+// ArcadeStatus defines the observed state of Arcade
+type ArcadeStatus struct {
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// Instance is the Schema for the instances API
-type Instance struct {
+// Arcade is the Schema for the arcades API
+type Arcade struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   InstanceSpec   `json:"spec,omitempty"`
-	Status InstanceStatus `json:"status,omitempty"`
+	Spec   ArcadeSpec   `json:"spec,omitempty"`
+	Status ArcadeStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// InstanceList contains a list of Instance
-type InstanceList struct {
+// ArcadeList contains a list of Arcade
+type ArcadeList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Instance `json:"items"`
+	Items           []Arcade `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Instance{}, &InstanceList{})
+	SchemeBuilder.Register(&Arcade{}, &ArcadeList{})
 }
