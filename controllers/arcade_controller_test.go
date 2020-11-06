@@ -1,9 +1,4 @@
 /*
-Ideally, we should have one `<kind>_conroller_test.go` for each controller scaffolded and called in the `test_suite.go`.
-So, let's write our example test for the CronJob controller (`cronjob_controller_test.go.`)
-*/
-
-/*
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,10 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // +kubebuilder:docs-gen:collapse=Apache License
-
-/*
-As usual, we start with the necessary imports. We also define some utility variables.
-*/
 package controllers
 
 import (
@@ -30,58 +21,45 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
 
 	arcadev1alpha1 "github.com/redhat-marketplace/marketplace-games-operator/api/v1alpha1"
 )
 
 // +kubebuilder:docs-gen:collapse=Imports
 
-var _ = Describe("Reconciler", func() {
-	defer GinkgoRecover()
-
+var _ = Describe("Arcade Controller", func() {
 	const (
-		ArcadeName      = "test-arcade"
-		ArcadeNamespace = "default"
-		timeout         = time.Second * 10
-		interval        = time.Millisecond * 250
+		ArcadeName            = "test-arcade"
+		ArcadeNamespace       = "default"
+		ArcadePort      int32 = 4004
+		timeout               = time.Second * 10
+		interval              = time.Millisecond * 250
 	)
 
 	ctx := context.Background()
 
-	BeforeEach(func() {
-		// reconciled = make(chan reconcile.Request)
-		Expect(cfg).NotTo(BeNil())
-	})
-
-	Context("Arcade", func() {
-		It("Should successfully create Arcade CustomResource (CR)", func() {
-			By("Creating a new Arcade CR")
-			// Create Arcade
+	Context("When reconciling", func() {
+		It("Should successfully attempt an Arcade install", func() {
+			By("Creating a new Arcade instance")
 			arcade := &arcadev1alpha1.Arcade{
-				TypeMeta: metav1.TypeMeta{
-					APIVersion: "game.marketplace.redhat.com/v1alpha1",
-					Kind:       "Arcade",
-				},
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      ArcadeName,
 					Namespace: ArcadeNamespace,
 				},
-				Spec: arcadev1alpha1.ArcadeSpec{
-					Foo: "bar",
-				},
 			}
 			Expect(k8sClient.Create(ctx, arcade)).Should(Succeed())
 
-			By("Validate Arcade CR was created")
-			// Look up Arcade CR
-			lookupKey := types.NamespacedName{Name: ArcadeName, Namespace: ArcadeNamespace}
+			By("Verifying Arcade created")
+			key := types.NamespacedName{Name: ArcadeName, Namespace: ArcadeNamespace}
 			createdArcade := &arcadev1alpha1.Arcade{}
 
 			Eventually(func() bool {
-				err := k8sClient.Get(ctx, lookupKey, createdArcade)
+				err := k8sClient.Get(ctx, key, createdArcade)
 				if err != nil {
 					return false
 				}
@@ -90,7 +68,36 @@ var _ = Describe("Reconciler", func() {
 
 			Expect(createdArcade.Name).To(Equal(arcade.Name))
 			Expect(createdArcade.Namespace).To(Equal(arcade.Namespace))
-			Expect(createdArcade.Spec.Foo).To(Equal(arcade.Spec.Foo))
+
+			By("Reconciling")
+			result, err := arcadeReconciler.Reconcile(ctrl.Request{
+				NamespacedName: key,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).ToNot(BeNil())
+
+			By("Verifying deployment was created")
+			dep := &appsv1.Deployment{}
+			Eventually(func() bool {
+				err := k8sClient.Get(ctx, key, dep)
+				if err != nil {
+					return false
+				}
+				return true
+			}, timeout, interval).Should(BeTrue())
+			Expect(dep.Spec.Template.Spec.Containers[0].Name).To(Equal("arcade"))
+			Expect(dep.Spec.Template.Spec.Containers[0].Image).To(ContainSubstring("arcade"))
+
+			By("Verifying service was created")
+			svc := &corev1.Service{}
+			Eventually(func() bool {
+				err := k8sClient.Get(ctx, key, svc)
+				if err != nil {
+					return false
+				}
+				return true
+			}, timeout, interval).Should(BeTrue())
+			Expect(svc.Spec.Ports[0].Port).To(Equal(ArcadePort))
 		})
 	})
 
