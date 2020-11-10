@@ -1,0 +1,26 @@
+name: Publish image to artifactory
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  push_to_registry:
+    name: Build & push image to registry
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Login to registry
+        run: |
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+
+      - name: Build, tag, & push image to registry
+        run: make docker-build && make docker-push
+        env:
+          IMG: "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator"
+          REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
+          REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}

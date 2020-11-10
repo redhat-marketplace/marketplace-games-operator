@@ -20,6 +20,10 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
+ARG REGISTRY_HOST
+ARG REGISTRY_REPO
+ENV REGISTRY_HOST=${REGISTRY_HOST}
+ENV REGISTRY_REPO=${REGISTRY_REPO}
 WORKDIR /
 COPY --from=builder /workspace/manager .
 USER nonroot:nonroot
