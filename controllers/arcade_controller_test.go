@@ -21,10 +21,12 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	routev1 "github.com/openshift/api/route/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	intstr "k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	arcadev1alpha1 "github.com/redhat-marketplace/marketplace-games-operator/api/v1alpha1"
@@ -66,8 +68,8 @@ var _ = Describe("Arcade Controller", func() {
 				return true
 			}, timeout, interval).Should(BeTrue())
 
-			Expect(createdArcade.Name).To(Equal(arcade.Name))
-			Expect(createdArcade.Namespace).To(Equal(arcade.Namespace))
+			Expect(createdArcade.Name).To(Equal(ArcadeName))
+			Expect(createdArcade.Namespace).To(Equal(ArcadeNamespace))
 
 			By("Reconciling")
 			result, err := arcadeReconciler.Reconcile(ctrl.Request{
@@ -98,6 +100,18 @@ var _ = Describe("Arcade Controller", func() {
 				return true
 			}, timeout, interval).Should(BeTrue())
 			Expect(svc.Spec.Ports[0].Port).To(Equal(ArcadePort))
+
+			By("Verifying route was created")
+			rt := &routev1.Route{}
+			Eventually(func() bool {
+				err := k8sClient.Get(ctx, key, rt)
+				if err != nil {
+					return false
+				}
+				return true
+			}, timeout, interval).Should(BeTrue())
+			Expect(rt.Spec.Port.TargetPort).To(Equal(intstr.FromString(ArcadeName)))
+			Expect(rt.Spec.TLS.Termination).To(Equal(routev1.TLSTerminationEdge))
 		})
 	})
 

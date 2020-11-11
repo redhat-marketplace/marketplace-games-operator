@@ -23,6 +23,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -58,9 +62,11 @@ var _ = BeforeSuite(func(done Done) {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:        []string{filepath.Join("..", "config", "crd", "bases")},
-		AttachControlPlaneOutput: true,
+		CRDDirectoryPaths: []string{filepath.Join("..", "config", "crd", "bases")},
 	}
+
+	addCRDToEnvironment(testEnv,
+		routev1.SchemeGroupVersion.WithKind("Route"))
 
 	var err error
 	cfg, err = testEnv.Start()
@@ -114,3 +120,35 @@ var _ = AfterSuite(func() {
 	err := testEnv.Stop()
 	Expect(err).ToNot(HaveOccurred())
 })
+
+func addCRDToEnvironment(env *envtest.Environment, gvks ...schema.GroupVersionKind) {
+	for _, gvk := range gvks {
+		plural, singular := meta.UnsafeGuessKindToResource(gvk)
+		crd := &apiextensionsv1beta1.CustomResourceDefinition{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "apiextensions.k8s.io/v1beta1",
+				Kind:       "CustomResourceDefinition",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: plural.Resource + "." + gvk.Group,
+			},
+			Spec: apiextensionsv1beta1.CustomResourceDefinitionSpec{
+				Group:   gvk.Group,
+				Version: gvk.Version,
+				Names: apiextensionsv1beta1.CustomResourceDefinitionNames{
+					Plural:   plural.Resource,
+					Singular: singular.Resource,
+					Kind:     gvk.Kind,
+				},
+				Versions: []apiextensionsv1beta1.CustomResourceDefinitionVersion{
+					{
+						Name:    gvk.Version,
+						Served:  true,
+						Storage: true,
+					},
+				},
+			},
+		}
+		env.CRDInstallOptions.CRDs = append(env.CRDInstallOptions.CRDs, crd)
+	}
+}

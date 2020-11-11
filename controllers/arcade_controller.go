@@ -121,6 +121,7 @@ func (r *ArcadeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&arcadev1alpha1.Arcade{}).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
+		Owns(&routev1.Route{}).
 		Complete(r)
 }
 
