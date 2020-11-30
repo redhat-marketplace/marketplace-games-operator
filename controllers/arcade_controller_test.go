@@ -38,7 +38,7 @@ var _ = Describe("Arcade Controller", func() {
 	const (
 		ArcadeName            = "test-arcade"
 		ArcadeNamespace       = "default"
-		ArcadePort      int32 = 4004
+		ArcadePort      int32 = 8080
 		timeout               = time.Second * 10
 		interval              = time.Millisecond * 250
 	)
@@ -110,7 +110,7 @@ var _ = Describe("Arcade Controller", func() {
 				}
 				return true
 			}, timeout, interval).Should(BeTrue())
-			Expect(rt.Spec.Port.TargetPort).To(Equal(intstr.FromString(ArcadeName)))
+			Expect(rt.Spec.Port.TargetPort).To(Equal((intstr.FromInt(int(ArcadePort)))))
 			Expect(rt.Spec.TLS.Termination).To(Equal(routev1.TLSTerminationEdge))
 		})
 	})
