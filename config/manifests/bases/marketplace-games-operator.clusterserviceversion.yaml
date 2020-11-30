@@ -1,0 +1,79 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+    operators.operatorframework.io/builder: operator-sdk-v1.2.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
+  name: marketplace-games-operator.vX.Y.Z
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Arcade is the Schema for the arcades API
+      displayName: Arcade Instance
+      kind: Arcade
+      name: arcades.game.marketplace.redhat.com
+      resources:
+      - kind: Deployment
+        name: arcade-sample
+        version: v1
+      - kind: Pod
+        name: arcade-sample
+        version: v1
+      - kind: Service
+        name: arcade-sample
+        version: v1
+      specDescriptors:
+      - description: Size field used to determine total number of Arcade deployments. This field is optional
+        displayName: Size
+        path: size
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:size
+      statusDescriptors:
+      - description: Indicates the status of the Arcade instance; set to "OK" when Arcade instance is up
+        displayName: ArcadeStatus
+        path: arcadeStatus
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:arcadeStatus
+      - description: Provides additional information about a failure status
+        displayName: Reason
+        path: reason
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.phase:reason
+      version: v1alpha1
+  description: RHM Arcade Operator -- used to showcase how to build a simple operator for Red Hat Marketplace, Openshift, or a plain k8s cluster
+  displayName: Arcade Operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - operator
+  - rhm
+  - red hat
+  - marketplace
+  - games
+  - arcade
+  links:
+  - name: Marketplace Games Operator
+    url: https://marketplace-games-operator.domain
+  maturity: alpha
+  provider:
+    name: Red Hat Marketplace
+    url: http://marketplace.redhat.com
+  version: 0.0.0
