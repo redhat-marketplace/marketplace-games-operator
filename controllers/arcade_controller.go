@@ -193,7 +193,6 @@ func (r *ArcadeReconciler) updateStatus(arcade *arcadev1alpha1.Arcade, nameSpace
 	if err != nil {
 		r.Log.Error(err, "Error while updating status")
 	}
-
 }
 
 // deploymentForArcade returns a Arcade Deployment object
