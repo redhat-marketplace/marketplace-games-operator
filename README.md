@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Arcade Operator is an Operator built to showcase how to build an Operator around an existing application; the Operator was built using the [Operator-SDK](https://sdk.operatorframework.io/) which helped provide most of the scaffolding needed .
+The Arcade Operator is an Operator built to showcase how to build an Operator around an existing application; the Operator was built using the [Operator-SDK](https://sdk.operatorframework.io/) which helped provide most of the scaffolding needed.
 
 The Operator itself can deploy the [`marketplace-games-ui`](https://github.com/redhat-marketplace/marketplace-games-ui) application, a web app built with `Svelte` on the frontend and `Go` for the backend.
 
