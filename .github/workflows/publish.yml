@@ -1,15 +1,15 @@
 name: Publish image to artifactory
-on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
+on: [push]
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types: [closed]
 
 jobs:
   push_to_registry:
     name: Build & push image to registry
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -18,9 +18,18 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
 
-      - name: Build, tag, & push image to registry
+      - name: Build, test, tag, & push image to registry
         run: make docker-build && make docker-push
         env:
           IMG: "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator"
           REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
           REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
+
+      - name: Generate HTML coverage report
+        run: go tool cover -html=cover.out -o coverage.html
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: coverage.html
