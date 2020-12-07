@@ -22,17 +22,40 @@ import (
 
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// ArcadeSpec defines the desired state of Arcade
+// ArcadeSpec defines the desired state of Arcade, through defined fields
 type ArcadeSpec struct {
+	// Size field used to determine total number of Arcade deployments. This field is optional
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.displayName="Size"
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.x-descriptors="urn:alm:descriptor:io.kubernetes:size"
+	// +optional
+	Size int32 `json:"size,omitempty"`
 }
 
 // ArcadeStatus defines the observed state of Arcade
+// +k8s:openapi-gen=true
 type ArcadeStatus struct {
+	// Indicates the status of the Arcade instance; set "OK" when Arcade instance is up
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	ArcadeStatus string `json:"arcadeStatus,omitempty"`
+	// Provides additional information about a failure status
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Reason string `json:"reason,omitempty"`
 }
+
+// Different values for ArcadeStatus
+const (
+	ArcadeStatusOK      string = "OK"
+	ArcadeStatusFailure string = "Failure"
+	ArcadeStatusPending string = "Pending"
+)
+
+// +operator-sdk:gen-csv:customresourcedefinitions.displayName="Arcade"
+// +operator-sdk:gen-csv:customresourcedefinitions.resources="Deployment,v1,\"A Kubernetes Deployment\""
+// +operator-sdk:gen-csv:customresourcedefinitions.resources="Service,v1,\"A Kubernetes Service\""
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-
 // Arcade is the Schema for the arcades API
 type Arcade struct {
 	metav1.TypeMeta   `json:",inline"`
