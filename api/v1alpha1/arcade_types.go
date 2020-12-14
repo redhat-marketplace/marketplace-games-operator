@@ -50,7 +50,6 @@ const (
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-
 // Arcade is the Schema for the arcades API
 // +operator-sdk:csv:customresourcedefinitions:displayName="Arcade Instance",resources={{Pod,v1,arcade-sample},{Deployment,v1,arcade-sample},{Service,v1,arcade-sample}}
 type Arcade struct {

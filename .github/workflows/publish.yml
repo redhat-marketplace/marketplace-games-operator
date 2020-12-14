@@ -18,9 +18,18 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
 
-      - name: Build, tag, & push image to registry
+      - name: Build, test, tag, & push image to registry
         run: make docker-build && make docker-push
         env:
           IMG: "${{ secrets.REGISTRY_REPO }}.${{ secrets.REGISTRY_HOST }}/arcade-operator"
           REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
           REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
+
+      - name: Generate HTML coverage report
+        run: go tool cover -html=cover.out -o coverage.html
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: coverage.html
