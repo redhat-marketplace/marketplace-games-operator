@@ -1,0 +1,196 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "game.marketplace.redhat.com/v1alpha1",
+          "kind": "Arcade",
+          "metadata": {
+            "name": "arcade-sample"
+          },
+          "spec": {
+            "size": 1
+          },
+          "status": {}
+        }
+      ]
+    capabilities: Basic Install
+    operators.operatorframework.io/builder: operator-sdk-v1.2.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
+  name: marketplace-games-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Arcade is the Schema for the arcades API
+      displayName: Arcade Instance
+      kind: Arcade
+      name: arcades.game.marketplace.redhat.com
+      resources:
+      - kind: Deployment
+        name: arcade-sample
+        version: v1
+      - kind: Pod
+        name: arcade-sample
+        version: v1
+      - kind: Service
+        name: arcade-sample
+        version: v1
+      specDescriptors:
+      - description: Size field used to determine total number of Arcade deployments. This field is optional
+        displayName: Size
+        path: size
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:size
+      statusDescriptors:
+      - description: Indicates the status of the Arcade instance; set to "OK" when Arcade instance is up
+        displayName: ArcadeStatus
+        path: arcadeStatus
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:arcadeStatus
+      - description: Provides additional information about a failure status
+        displayName: Reason
+        path: reason
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.phase:reason
+      version: v1alpha1
+  description: RHM Arcade Operator - a simple operator used to showcase how to build an operator around an existing web application that can can run on Openshift, Vanilla k8s, or on-boarded to Red Hat Marketplace.
+  displayName: RHM Arcade Operator
+  icon:
+  - base64data: "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"
+    mediatype: "image/png"
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - arcade.marketplace.redhat.com
+          resources:
+          - arcade
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - arcade.marketplace.redhat.com
+          resources:
+          - arcade/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        serviceAccountName: default
+      deployments:
+      - name: marketplace-games-operator-controller-manager
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              control-plane: controller-manager
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                control-plane: controller-manager
+            spec:
+              containers:
+              - args:
+                - --secure-listen-address=0.0.0.0:8443
+                - --upstream=http://127.0.0.1:8080/
+                - --logtostderr=true
+                - --v=10
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.5.0
+                name: kube-rbac-proxy
+                ports:
+                - containerPort: 8443
+                  name: https
+                resources: {}
+              - args:
+                - --metrics-addr=127.0.0.1:8080
+                - --enable-leader-election
+                command:
+                - /manager
+                image: controller:latest
+                name: manager
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 30Mi
+                  requests:
+                    cpu: 100m
+                    memory: 20Mi
+              terminationGracePeriodSeconds: 10
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps/status
+          verbs:
+          - get
+          - update
+          - patch
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        serviceAccountName: default
+    strategy: deployment
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - operator
+  - rhm
+  - red hat
+  - marketplace
+  - games
+  - arcade
+  links:
+  - name: Marketplace Games Operator
+    url: https://github.com/redhat-marketplace/marketplace-games-operator
+  maturity: alpha
+  provider:
+    name: Red Hat Marketplace
+    url: http://marketplace.redhat.com
+  version: 0.0.1

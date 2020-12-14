@@ -25,21 +25,19 @@ import (
 // ArcadeSpec defines the desired state of Arcade, through defined fields
 type ArcadeSpec struct {
 	// Size field used to determine total number of Arcade deployments. This field is optional
-	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
-	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.displayName="Size"
-	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.x-descriptors="urn:alm:descriptor:io.kubernetes:size"
 	// +optional
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Size",xDescriptors="urn:alm:descriptor:io.kubernetes:size"
 	Size int32 `json:"size,omitempty"`
 }
 
 // ArcadeStatus defines the observed state of Arcade
 // +k8s:openapi-gen=true
 type ArcadeStatus struct {
-	// Indicates the status of the Arcade instance; set "OK" when Arcade instance is up
-	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	// Indicates the status of the Arcade instance; set to "OK" when Arcade instance is up
+	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="ArcadeStatus",xDescriptors="urn:alm:descriptor:com.tectonic.ui:arcadeStatus"
 	ArcadeStatus string `json:"arcadeStatus,omitempty"`
 	// Provides additional information about a failure status
-	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Reason",xDescriptors="urn:alm:descriptor:io.kubernetes.phase:reason"
 	Reason string `json:"reason,omitempty"`
 }
 
@@ -50,13 +48,10 @@ const (
 	ArcadeStatusPending string = "Pending"
 )
 
-// +operator-sdk:gen-csv:customresourcedefinitions.displayName="Arcade"
-// +operator-sdk:gen-csv:customresourcedefinitions.resources="Deployment,v1,\"A Kubernetes Deployment\""
-// +operator-sdk:gen-csv:customresourcedefinitions.resources="Service,v1,\"A Kubernetes Service\""
-
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // Arcade is the Schema for the arcades API
+// +operator-sdk:csv:customresourcedefinitions:displayName="Arcade Instance",resources={{Pod,v1,arcade-sample},{Deployment,v1,arcade-sample},{Service,v1,arcade-sample}}
 type Arcade struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -181,6 +181,7 @@ func (r *ArcadeReconciler) updateStatus(arcade *arcadev1alpha1.Arcade, nameSpace
 			if err := r.Get(context.TODO(), nameSpaceKey, updatedArcade); err != nil {
 				return false, err
 			}
+
 			// override only the spec
 			updatedArcade.Status = arcade.Status
 			arcade = updatedArcade
