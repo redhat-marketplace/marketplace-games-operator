@@ -73,7 +73,7 @@ generate: controller-gen
 
 # Build the docker image
 docker-build: test
-	docker build . -t ${IMG} --build-arg REGISTRY_HOST --build-arg REGISTRY_REPO
+	docker build -t ${IMG} --build-arg REGISTRY_HOST --build-arg REGISTRY_REPO .
 
 # Push the docker image
 docker-push:
