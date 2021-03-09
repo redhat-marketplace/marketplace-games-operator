@@ -116,7 +116,7 @@ func (r *ArcadeReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	route := &routev1.Route{}
-	err = r.Get(ctx, nameSpaceKey, route)
+	err = r.Client.Get(context.TODO(), nameSpaceKey, route)
 	if err != nil && errors.IsNotFound(err) {
 		rt := r.routeForArcade(arcade)
 		log.Info("Creating a new Route", "Route.Namespace", rt.Namespace, "Route.Name", rt.Name)
