@@ -20,6 +20,15 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
+
+### Required OpenShift Labels
+LABEL name="RHM Arcade Operator" \
+  vendor="Red Hat Marketplace" \
+  version="v0.0.1" \
+  release="1" \
+  summary="This is an example Arcade operator provided by Red Hat Marketplace." \
+  description="This operator will deploy the Red Hat Marketplace arcade to the cluster."
+
 ARG REGISTRY_HOST
 ARG REGISTRY_REPO
 ENV REGISTRY_HOST=${REGISTRY_HOST}
