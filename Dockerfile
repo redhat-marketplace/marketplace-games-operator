@@ -14,6 +14,10 @@ COPY main.go main.go
 COPY api/ api/
 COPY controllers/ controllers/
 
+# Copy license
+RUN mkdir /licenses
+COPY LICENSE /licenses/LICENSE
+
 # Build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager main.go
 
@@ -31,9 +35,9 @@ ARG REGISTRY_HOST
 ARG REGISTRY_REPO
 ENV REGISTRY_HOST=${REGISTRY_HOST}
 ENV REGISTRY_REPO=${REGISTRY_REPO}
-ENV USER_UID=1001
+
 WORKDIR /
 COPY --from=builder /workspace/manager .
-USER ${USER_UID}
+USER 1001:1001
 
 ENTRYPOINT ["/manager"]
