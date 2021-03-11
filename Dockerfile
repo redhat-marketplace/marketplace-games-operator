@@ -38,6 +38,7 @@ ENV REGISTRY_REPO=${REGISTRY_REPO}
 
 WORKDIR /
 COPY --from=builder /workspace/manager .
+COPY --from=builder /licenses /licenses
 USER 1001:1001
 
 ENTRYPOINT ["/manager"]
